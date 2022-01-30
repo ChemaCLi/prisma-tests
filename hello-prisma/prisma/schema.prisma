@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  user_id           String            @id @unique(map: "user_user_id") @db.Uuid
+  created_at        DateTime?         @db.Date
+  registration_date DateTime?         @db.Date
+  email             String?           @db.VarChar(50)
+  password          String?           @db.VarChar(255)
+  user_status       user_status_enum?
+  system_role       system_role_enum?
+  organism_role     String?           @db.VarChar(255)
+  tec_relationships String?           @db.VarChar(255)
+  organisms         String?           @db.VarChar(255)
+  batches           String?           @db.VarChar(255)
+  memberships       String?           @db.VarChar(255)
+  profile           Profile?
+}
+
+model Profile {
+  profile_id                 String              @id @unique(map: "profile_profile_id") @db.Uuid
+  user_id                    String              @unique @db.Uuid
+  gender                     gender_enum?
+  birthday                   DateTime?           @db.Date
+  full_name                  String?             @db.VarChar(100)
+  i_full_name                String?             @db.VarChar(100)
+  first_name                 String?             @db.VarChar(50)
+  middle_name                String?             @db.VarChar(50)
+  last_name                  String?             @db.VarChar(50)
+  profile_pic_url            String?             @db.VarChar(255)
+  phone                      String?             @db.VarChar(20)
+  has_tec_relationship       Boolean?
+  occupation_speciality_area String?             @db.VarChar(50)
+  occupation_companies       Json?               @db.Json
+  occupation                 String?             @db.VarChar(255)
+  user                       User                @relation(fields: [user_id], references: [user_id], onDelete: NoAction, onUpdate: NoAction, map: "user has a profile")
+  location          Location[]
+}
+
+model Location {
+  location_id       String              @id @db.Uuid
+  address           String?             @db.VarChar(255)
+  country           String?             @db.VarChar(100)
+  i_country         String?             @db.VarChar(100)
+  state             String?             @db.VarChar(100)
+  i_state           String?             @db.VarChar(100)
+  city              String?             @db.VarChar(100)
+  i_city            String?             @db.VarChar(100)
+  profile Profile[]
+}
+
+enum system_role_enum {
+  SUPER_ADMIN
+  COORDINATOR
+  ENTREPRENEUR
+  ADVISER
+}
+
+enum user_status_enum {
+  POTENTIAL
+  LEAD
+  LOST
+  ACTIVE
+  INACTIVE
+}
+
+enum gender_enum {
+  FEMALE
+  MALE
+  OTHER
+  NOT_SAY
+}
